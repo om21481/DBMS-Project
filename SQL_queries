@@ -1,0 +1,27 @@
+CREATE DATABASE temp;
+USE temp;
+
+CREATE TABLE student(
+	id INT PRIMARY_KEY
+	name VARCHAR(25)
+);
+
+INSERT INTO student VALUES(1, "HI");
+SELECT * FROM student
+
+
+
+Use this 
+CREATE DATABASE IF NOT EXISTS DB-NAME;
+DROP DATABASE IF EXISTS DB-NAME;
+SHOW DATABASES;
+SHOW TABLES;
+
+
+we can use dual tables means dummy tables -- in this we will be executing simple queries using SQL
+SELECT 55 + 11;
+
+SELECT ucase("omgarg")      -- convert to uppercase
+SELECT lcase("OM garg")     -- convert to lowercase
+
+

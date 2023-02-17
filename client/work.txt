@@ -1,0 +1,40 @@
+Distance and coordinate setting with map -- done
+
+Integrating with react -- lagbhag done
+
+Admin panel login and signup 
+login and signup page will contain caraosel
+
+Cookies and JWT auth
+
+How to make POST request and different types of request in React -- done
+
+
+Need to see EmailJS and OTP sending , also valid for 30 mins only -- done this is for only client side
+
+RazorPay Integration -- we will do this in last
+
+
+
+
+
+
+
+
+EmailJS:
+username: DBMS Project
+Pass: EmailJS@123
+
+Service ID: service_ike0i48
+
+Template:
+
+Hello {{to_name}},
+
+The OTP is: {{otp}}
+
+Don't share this One-Time-Password with anybody. It is valid for 30 mins only.
+
+Best wishes,
+DBMS Project
+
