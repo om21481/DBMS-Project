@@ -134,3 +134,28 @@ export const add_phone_Client = () => {
         res.status(200).send("Phones inserted successfully");
     })
 }
+
+
+// this will give the drivers near the client who is not busy
+export const drivers_nearby = (req, res, next) => {
+    const {curr_lat, curr_long} = req.body;
+    let distance = req.params.distance;
+    distance = (distance*0.015060)*(distance*0.015060);
+
+    const sql_query = `select * from ((select Driver_ID from driver_table where (${curr_lat} - D_Current_Location_lat)*(${curr_lat} - D_Current_Location_lat)
+     + (${curr_long} - D_Current_Location_long) * (${curr_long} - D_Current_Location_long) <= ${distance}
+    ) intersect select Driver_ID from verification where Accepted_Drivers = true) As T;`;
+
+    db.query(sql_query, (err, response, feilds) => {
+        if(err){
+            res.status(404).send("Page not found");
+            return;
+        }
+
+        res.status(200).json(response);
+    })
+
+}
+
+// this will give the drivers near the client who is not busy and order them by ratings and give the top one
+

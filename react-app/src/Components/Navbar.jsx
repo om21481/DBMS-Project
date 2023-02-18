@@ -3,7 +3,7 @@ import React from "react";
 const Navbar = () => {
     return(
         <>
-        <div className="w-full p-2 flex items-center justify-between fixed">
+        <div className="w-full p-2 flex items-center justify-between fixed bg-black">
             <div className="w-[15%] ">
                 <img src="logo-no-background 2.png" alt="" className="w-full"/>
             </div>
@@ -14,7 +14,7 @@ const Navbar = () => {
                 </div>
                 <div className="w-[19%] flex items-center justify-center">
                     <img src="icons8-services-96 1.png" alt="" className="w-[20%] mx-[8px]"/>
-                    <p className="text-white">SERVICES</p>
+                    <p className="text-white">ABOUT US</p>
                 </div>
                 <div className="w-[19%] flex items-center justify-center">
                     <img src="icons8-trekking-64 1.png" alt="" className="w-[20%] mx-[8px]"/>

@@ -6,8 +6,8 @@ import Navbar from "./Components/Navbar.jsx";
 function App() {
   return (
     <>
-      <Make_Trips/>
-      {/* <BookARide/> */}
+      {/* <Make_Trips/> */}
+      <BookARide/>
     </>
   );
 }
