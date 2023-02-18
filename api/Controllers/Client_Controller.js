@@ -247,7 +247,7 @@ export const get_rejected_Driver_ID = (req, res, next) => {
 export const create_Notification = (req, res, next) => {
     const {Driver_ID, Start_lat, Start_long, End_lat, End_long} = req.body;
 
-    const sql_query = `insert into Notifications_Table (Driver_ID, Start_lat, Start_long, End_lat, End_long) 
+    const sql_query = `insert into Notification_Table (Driver_ID, Start_lat, Start_long, End_lat, End_long) 
     values(${Driver_ID}, ${Start_lat}, ${Start_long}, ${End_lat}, ${End_long});`;
 
     db.query(sql_query, (err, response, feilds) => {
@@ -263,7 +263,7 @@ export const create_Notification = (req, res, next) => {
 export const read_Notification = (req, res, next) => {
     const Driver_ID = req.params.DriverID;
 
-    const sql_query = `SELECT * FROM Notifications_Table
+    const sql_query = `SELECT * FROM Notification_Table
     WHERE Driver_ID = ${Driver_ID};`;
 
     db.query(sql_query, (err, response, feilds) => {
@@ -295,5 +295,37 @@ export const delete_Notification = (req, res, next) => {
 
 // Cancelled Table
 export const create_cancelled_trip = (req, res, next) => {
-    
+    const {Driver_ID, Cancel_Start_Lat, Cancel_Start_Long, Cancel_End_Lat, Cancel_End_Long, Cancel_Time} = req.body;
+
+    const sql_query = `insert into Cancellation 
+    (Driver_ID, Cancel_Start_Lat, Cancel_Start_Long, Cancel_End_Lat, Cancel_End_Long, Cancel_Time) 
+    values (${Driver_ID}, ${Cancel_Start_Lat}, ${Cancel_Start_Long}, ${Cancel_End_Lat}, ${Cancel_End_Long}, ${Cancel_Time});`;
+
+    db.query(sql_query, (err, response, feilds) => {
+        if(err){
+            next(createError(404, "Page not found"));
+            return;
+        }
+        console.log(response);
+        res.status(200).send("Cancelled Trip created Succesfully");
+    })
+
 }
+
+export const delete_cancelled_trip = (req, res, next) => {
+    const Driver_ID = req.params.DriverID;
+
+    const sql_query = `delete from Cancellation 
+    where Driver_ID = ${Driver_ID};`;
+
+    db.query(sql_query, (err, response, feilds) => {
+        if(err){
+            next(createError(404, "Page not found"));
+            return;
+        }
+        console.log(response);
+        res.status(200).send("Cancellation Deleted Succesfully");
+    })
+}
+
+    

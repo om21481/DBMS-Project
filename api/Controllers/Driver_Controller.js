@@ -199,7 +199,7 @@ export const update_Notification_Table = (req, res, next) => {
     const sql_query = ``;
 
     if(attribute === "Accepted"){
-        sql_query = `update Notifications_Table 
+        sql_query = `update Notification_Table 
         set Accepted = true 
         where Driver_ID = ${Driver_ID};`;
     }
@@ -226,3 +226,4 @@ export const update_Notification_Table = (req, res, next) => {
     }
 
 }
+
