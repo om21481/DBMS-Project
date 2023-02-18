@@ -89,3 +89,9 @@ export const login = async (req, res, next) => {
 
 
 // we have to  make one query such that it finds admin or client on one go
+
+
+// we will use one query that we made to register -- union of drivers client and admin for searching only
+// if not found then make a entry on respective searching of tables 
+
+// just like same for login
