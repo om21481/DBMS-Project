@@ -122,7 +122,7 @@ export const add_phone_Driver = (req, res, next) => {
     const sql_query = `SELECT * FROM Driver_Table
     WHERE Driver_ID = ${Driver_ID}; `;
     for(let i=0;i<phones.length;i++){
-        sql_query += `INSERT INTO Driver_Phones VALUES(${Driver_ID}, ${phones[i]}); `
+        sql_query += `INSERT INTO Driver_Phones VALUES(${Driver_ID}, ${phones[i]}); \n`
     }
 
     db.query(sql_query, (err, response, feilds) => {
@@ -132,5 +132,75 @@ export const add_phone_Driver = (req, res, next) => {
         }
 
         res.status(200).send("Phones inserted successfully");
+    })
+}
+
+
+export const is_Busy_true = (req, res, next) => {
+    const Driver_ID = req.params.Driver_ID;
+
+    const sql_query = `UPDATE Driver_Table 
+    SET is_Busy = true 
+    WHERE Driver_ID = ${Driver_ID}; `;
+
+    db.query(sql_query, (err, response, feilds) => {
+        if(err){
+            res.status(404).send("Page not found");
+            return;
+        }
+
+        res.status(200).send("Driver Updated successfully");
+    })
+}
+
+export const is_Busy_false = (req, res, next) => {
+    const Driver_ID = req.params.Driver_ID;
+
+    const sql_query = `UPDATE Driver_Table 
+    SET is_Busy = false 
+    WHERE Driver_ID = ${Driver_ID}; `;
+
+    db.query(sql_query, (err, response, feilds) => {
+        if(err){
+            res.status(404).send("Page not found");
+            return;
+        }
+
+        res.status(200).send("Driver Updated successfully");
+    })
+}
+
+// location updations and creations
+export const create_Driver_locations = (req, res, next) => {
+    const Driver_ID = req.params.DriverID;
+    const {Current_lat, Current_long} = req.body;
+
+    const sql_query = `INSERT INTO Driver_Locations (Driver_ID, latitude, longitude) 
+    VALUES (${Driver_ID}, ${Current_lat}, ${Current_long});`;
+
+    db.query(sql_query, (err, response, feilds) => {
+        if(err){
+            next(createError(404, "Page not found"));
+            return;
+        }
+        console.log(response);
+        res.status(200).send("Locations Updated Succesfully");
+    })
+}
+
+// by admin only
+export const get_all_driver_locations = (req, res, next) => {
+    const Driver_ID = req.params.DriverID;
+
+    const sql_query = `select * from Driver_Locations 
+    where Driver_ID = ${Driver_ID};`;
+
+    db.query(sql_query, (err, response, feilds) => {
+        if(err){
+            next(createError(404, "Page not found"));
+            return;
+        }
+
+        res.status(200).send(response);
     })
 }
