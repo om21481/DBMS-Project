@@ -8,7 +8,8 @@ export const create_Client = () => {
         const salt = bcrypt.genSaltSync(10);
         Password = bcrypt.hashSync(Password, salt);
 
-        const sql_query = `INSERT INTO client_table (C_First_Name, C_Last_Name, C_DOB, C_Email, C_Password) VALUES (${FirstName}, ${LastName}, ${DOB}, ${Email}, ${Password});`;
+        const sql_query = `INSERT INTO client_table (C_First_Name, C_Last_Name, C_DOB, C_Email, C_Password)
+         VALUES (${FirstName}, ${LastName}, ${DOB}, ${Email}, ${Password});`;
 
         db.query(sql_query, (err, response, feilds) => {
             if(err){
@@ -237,4 +238,62 @@ export const get_rejected_Driver_ID = (req, res, next) => {
 
         res.status(200).json(response);
     })
+}
+
+
+
+
+// Notification Table
+export const create_Notification = (req, res, next) => {
+    const {Driver_ID, Start_lat, Start_long, End_lat, End_long} = req.body;
+
+    const sql_query = `insert into Notifications_Table (Driver_ID, Start_lat, Start_long, End_lat, End_long) 
+    values(${Driver_ID}, ${Start_lat}, ${Start_long}, ${End_lat}, ${End_long});`;
+
+    db.query(sql_query, (err, response, feilds) => {
+        if(err){
+            throw new Error("Error in Creating a client");
+        }
+
+        console.log(response);
+        res.status(200).send("Notification is Created Successfully")
+    })
+
+}
+export const read_Notification = (req, res, next) => {
+    const Driver_ID = req.params.DriverID;
+
+    const sql_query = `SELECT * FROM Notifications_Table
+    WHERE Driver_ID = ${Driver_ID};`;
+
+    db.query(sql_query, (err, response, feilds) => {
+        if(err){
+            res.status(404).send("Page not found");
+            return;
+        }
+
+        res.status(200).json(response);
+    })    
+}
+export const delete_Notification = (req, res, next) => {
+    const Driver_ID = req.params.DriverID;
+
+    const sql_query = `DELETE FROM Notification_Table 
+    WHERE Driver_ID = ${Driver_ID}`;
+
+    db.query(sql_query, (err, response, feilds) => {
+        if(err){
+            next(createError(404, "Page not found"));
+            return;
+        }
+        console.log(response);
+        res.status(200).send("Notification Deleted Succesfully");
+    })
+}
+
+
+
+// Cancelled Table
+export const create_cancelled_trip = (req, res, next) => {
+    
 }

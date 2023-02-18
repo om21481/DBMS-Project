@@ -136,28 +136,12 @@ export const add_phone_Driver = (req, res, next) => {
 }
 
 
-export const is_Busy_true = (req, res, next) => {
+export const is_Busy_update = (req, res, next) => {
     const Driver_ID = req.params.Driver_ID;
+    const {set_to} = req.body;
 
     const sql_query = `UPDATE Driver_Table 
-    SET is_Busy = true 
-    WHERE Driver_ID = ${Driver_ID}; `;
-
-    db.query(sql_query, (err, response, feilds) => {
-        if(err){
-            res.status(404).send("Page not found");
-            return;
-        }
-
-        res.status(200).send("Driver Updated successfully");
-    })
-}
-
-export const is_Busy_false = (req, res, next) => {
-    const Driver_ID = req.params.Driver_ID;
-
-    const sql_query = `UPDATE Driver_Table 
-    SET is_Busy = false 
+    SET is_Busy = ${set_to} 
     WHERE Driver_ID = ${Driver_ID}; `;
 
     db.query(sql_query, (err, response, feilds) => {
@@ -203,4 +187,42 @@ export const get_all_driver_locations = (req, res, next) => {
 
         res.status(200).send(response);
     })
+}
+
+
+
+// update Notifications Table
+export const update_Notification_Table = (req, res, next) => {
+    const Driver_ID = req.params.DriverID;
+    const {attribute} = req.body;
+
+    const sql_query = ``;
+
+    if(attribute === "Accepted"){
+        sql_query = `update Notifications_Table 
+        set Accepted = true 
+        where Driver_ID = ${Driver_ID};`;
+    }
+    else if(attribute === "Rejected"){
+        sql_query = `update Notifications_Table 
+        set Rejected = true 
+        where Driver_ID = ${Driver_ID};`;
+    }
+    else if(attribute === "Cancelled"){
+        sql_query = `update Notifications_Table 
+        set Cancelled = true 
+        where Driver_ID = ${Driver_ID};`;
+    }
+
+    if(sql_query !== ""){
+        db.query(sql_query, (err, response, feilds) => {
+            if(err){
+                next(createError(404, "Page not found"));
+                return;
+            }
+    
+            res.status(200).send("Notification Table updated Successfully");
+        })
+    }
+
 }
