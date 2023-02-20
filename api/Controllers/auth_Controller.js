@@ -8,29 +8,43 @@ export const register = (req, res, next) => {
 
     try {
         const salt = bcrypt.genSaltSync(10);
-        Password = bcrypt.hashSync(Password, salt);
+        const n_Password = bcrypt.hashSync(Password, salt);
 
-        const sql_query = "";
-
-        if(person == "Driver"){
-            sql_query = `INSERT INTO Driver_Table (D_First_Name, D_Last_Name, D_DOB, D_Email, D_Password) VALUES (${FirstName}, ${LastName}, ${DOB}, ${Email}, ${Password});`;
-        }
-        else if(person == "Client"){
-            sql_query = `INSERT INTO client_table (C_First_Name, C_Last_Name, C_DOB, C_Email, C_Password) VALUES (${FirstName}, ${LastName}, ${DOB}, ${Email}, ${Password});`;
-        }
-        else{
-            return next(createError(400, "Please enter as a client or driver"));
-        }
+        let sql_query = `select * from ( select D_Email, D_Password from Driver_Table 
+            union select C_Email, C_Password from  client_table
+            union select Admin_Email, Admin_Password from Admin_Table) As nrew
+            where D_Email = '${Email}';`;
 
         db.query(sql_query, (err, response, feilds) => {
             if(err){
-                throw new Error("Error in Registration");
+                return next(new Error("Error in Registration"));
             }
 
-            console.log(response);
-            res.status(200).send("User is Registered Successfully")
-        })
+            if(response[0] === undefined){
+                if(person === "Driver"){
+                    sql_query = `INSERT INTO Driver_Table (D_First_Name, D_Last_Name, D_DOB, D_Email, D_Password) VALUES ("${FirstName}", "${LastName}", "${DOB}", "${Email}", "${n_Password}");`;
+                }
+                else if(person === "Client"){
+                    sql_query = `INSERT INTO client_table (C_First_Name, C_Last_Name, C_DOB, C_Email, C_Password) VALUES ("${FirstName}", "${LastName}", "${DOB}", "${Email}", "${n_Password}");`;
+                }
+                else{
+                    return next(createError(400, "Please enter as a client or driver"));
+                }
         
+                db.query(sql_query, (err, response, feilds) => {
+                    if(err){
+                        return next(new Error("Error in Registration"));
+                    }
+        
+                    // console.log(response); here is metadata only 
+                    res.status(200).send("User is Registered Successfully")
+                })
+            }
+            else{
+                return next(createError(400, "User already exsists"));
+            }
+        })
+
     } catch (error) {
         return next(error);
     }
@@ -42,7 +56,7 @@ export const login = async (req, res, next) => {
         let sql_query = "";
         if(person === "Driver"){
             sql_query = `SELECT * FROM Driver_Table 
-            WHERE D_Email = ${Email};`;
+            WHERE D_Email = "${Email}";`;
         }
         else if(person === "Client"){
             sql_query = `SELECT * FROM client_table 
@@ -57,31 +71,91 @@ export const login = async (req, res, next) => {
             if(err){
                 return next(createError(404, "User not found!"));
             }
-            var user = {};
-            var isAdmin = false;
+            
+            // check in admin table for making is_Admin = true;
+            sql_query = `select * from Admin_Table where Admin_Email='${Email}';`;
+            db.query(sql_query, async(err, admin_response, feilds) => {
+                if(err){
+                    return next(createError(404, "User not found!"));
+                }
+                
+                var isAdmin = true;
+                var user = {};
+                
+                if(admin_response[0] === undefined){
+                    if(response[0] !== undefined){
+                        user = response[0];
+                        isAdmin = false;
 
-            const isPasswordCorrect = await bcrypt.compare(
-                Password,
-                user.C_Password
-            );
-            if (!isPasswordCorrect) return next(createError(400, "Wrong password or username!"));
+                        if(person === "Client"){
+                            const isPasswordCorrect = await bcrypt.compare(
+                                Password,
+                                user.C_Password
+                            )
 
-            user = response[0];
-            const token = Jwt.sign(
-                { id: user.Client_ID, isAdmin: isAdmin},
-                process.env.JWT
-            );
-          
-            const {C_Email, C_Password, ...otherDetails } = user;
-    
-            res
-            .cookie("access_token", token, {
-                httpOnly: true,
+                            if (!isPasswordCorrect) return next(createError(400, "Wrong password or username!"));
+
+                            const token = Jwt.sign(
+                                { id: user.Client_ID, isAdmin: isAdmin},
+                                process.env.JWT
+                            );
+
+                            let {C_Password, ...otherDetails } = user;
+                
+                            res
+                            .cookie("access_token", token, {
+                                httpOnly: true,
+                            })
+                            .status(200)
+                            .json({ details: { ...otherDetails }, isAdmin });
+                        }
+                        else if(person === "Driver"){
+                            const isPasswordCorrect = await bcrypt.compare(
+                                Password,
+                                user.D_Password
+                            )
+
+                            if (!isPasswordCorrect) return next(createError(400, "Wrong password or username!"));
+
+                            const token = Jwt.sign(
+                                { id: user.Driver_ID, isAdmin: isAdmin},
+                                process.env.JWT
+                            );
+
+                            let {D_Password, ...otherDetails } = user;
+                
+                            res
+                            .cookie("access_token", token, {
+                                httpOnly: true,
+                            })
+                            .status(200)
+                            .json({ details: { ...otherDetails }, isAdmin });
+                        }
+                        else{
+                            return next(createError(400, "Please enter as a client or driver"));
+                        }
+                    }
+                    else{
+                        return next(createError(400, "User not found : Error in Login details"))
+                    }
+                }
+                else{
+                    user = response[0];
+                    isAdmin = true;
+
+                    const isPasswordCorrect = await bcrypt.compare(
+                        Password,
+                        user.A_Password
+                    );
+
+                    if (!isPasswordCorrect) return next(createError(400, "Wrong password or username!"));
+                    
+                    const {A_Password, ...otherDetails } = user;
+            
+                    res.status(200).json({ details: { ...otherDetails }, isAdmin });
+                }
             })
-            .status(200)
-            .json({ details: { ...otherDetails }, isAdmin });
         })
-        
     } catch (error) {
         return next(error);
     }

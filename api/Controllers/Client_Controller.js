@@ -2,7 +2,7 @@ import db from "../index.js";
 import { createError } from "../utils/createError.js";
 import bcrypt from "bcrypt";
 
-export const create_Client = () => {
+export const create_Client = (req, res, next) => {
     const {FirstName, LastName, DOB, Email, Password} = req.body;
     try {
         const salt = bcrypt.genSaltSync(10);
@@ -25,7 +25,7 @@ export const create_Client = () => {
     }
 }
 
-export const update_Client = () => {
+export const update_Client = (req, res, next) => {
     const Client_ID = req.params.ClientID;
     const {FirstName, LastName, DOB, Email, Password} = req.body;
 
@@ -51,7 +51,7 @@ export const update_Client = () => {
     }
 }
 
-export const update_Client_location = () => {
+export const update_Client_location = (req, res, next) => {
     const Client_ID = req.params.ClientID;
     const {Current_lat, Current_long} = req.body;
 
@@ -116,7 +116,7 @@ export const get_Client_all = (req, res, next)=>{
     })
 }
 
-export const add_phone_Client = () => {
+export const add_phone_Client = (req, res, next) => {
     const Client_ID = req.params.Client_ID;
     const {phones} = req.body;
 

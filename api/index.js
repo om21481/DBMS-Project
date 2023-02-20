@@ -1,6 +1,7 @@
 import Express  from "express";
 import mysql from "mysql2";
 import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
 dotenv.config()
 
 import Trips_Router from "./Routes/Trips.js"
@@ -28,6 +29,7 @@ db.connect((err) => {
 
 
 app.use(Express.json())
+app.use(cookieParser())
 app.use("/Trips", Trips_Router);
 app.use("/auth", Auth_Router);
 app.use("/Client", ClientRouter);
@@ -36,7 +38,6 @@ app.use("/Vehicle", Vehicle_Router);
 app.use("/Admin", Admin_Router);
 
 app.use((err, req, res, next) => {
-  console.log("Inside this");
   const errorStatus = err.status || 500;
   const errorMessage = err.message || "Something went wrong!";
   return res.status(errorStatus).json({
