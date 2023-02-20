@@ -3,7 +3,7 @@ import { createError } from "../utils/createError.js";
 
 // accept and reject drivers
 export const accept_driver = (req, res, next) => {
-    const Driver_ID = req.params.DriverID;
+    const Driver_ID = req.params.ID;
 
     const sql_query =  `UPDATE Vehicle_Table SET is_registered = true WHERE Driver_ID = ${Driver_ID};
     UPDATE Verification SET Processing_Application = false, Accepted_Drivers = true WHERE DRIVER_ID = ${Driver_ID};`
@@ -18,7 +18,7 @@ export const accept_driver = (req, res, next) => {
 }
 
 export const reject_driver = (req, res, next) => {
-    const Driver_ID = req.params.DriverID;
+    const Driver_ID = req.params.ID;
 
     const sql_query =  `UPDATE Verification 
     SET Processing_Application = false, Rejected_Drivers = true WHERE DRIVER_ID = ${Driver_ID};`
@@ -33,7 +33,7 @@ export const reject_driver = (req, res, next) => {
 }
 
 export const process_driver = (req, res, next) => {
-    const Driver_ID = req.params.DriverID;
+    const Driver_ID = req.params.ID;
 
     const sql_query =  `UPDATE Verification 
     SET Processing_Application = true WHERE DRIVER_ID = ${Driver_ID};`
@@ -95,7 +95,7 @@ export const application_process_rejected = (req, res, next) => {
 
 
 export const update_Cancel_Email = (req, res, next) => {
-    const Driver_ID = req.params.DriverID;
+    const Driver_ID = req.params.ID;
 
     const sql_query =  `UPDATE Verification 
     SET Cancel_Email = Cancel_Email + 1 

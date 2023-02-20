@@ -26,7 +26,7 @@ export const create_Client = (req, res, next) => {
 }
 
 export const update_Client = (req, res, next) => {
-    const Client_ID = req.params.ClientID;
+    const Client_ID = req.params.ID;
     const {FirstName, LastName, DOB, Email, Password} = req.body;
 
     try {
@@ -52,7 +52,7 @@ export const update_Client = (req, res, next) => {
 }
 
 export const update_Client_location = (req, res, next) => {
-    const Client_ID = req.params.ClientID;
+    const Client_ID = req.params.ID;
     const {Current_lat, Current_long} = req.body;
 
     const sql_query = `UPDATE client_table 
@@ -70,7 +70,7 @@ export const update_Client_location = (req, res, next) => {
 }
 
 export const delete_Client = (req, res, next)=>{
-    const Client_ID = req.params.ClientID;
+    const Client_ID = req.params.ID;
 
     const sql_query = `DELETE FROM client_table 
     WHERE Client_ID = ${Client_ID}`;
@@ -86,7 +86,7 @@ export const delete_Client = (req, res, next)=>{
 }
 
 export const get_Client = (req, res, next)=>{
-    const Client_ID = req.params.ClientID;
+    const Client_ID = req.params.ID;
 
     const sql_query = `SELECT * FROM client_table 
     WHERE Client_ID = ${Client_ID}`;
@@ -117,7 +117,7 @@ export const get_Client_all = (req, res, next)=>{
 }
 
 export const add_phone_Client = (req, res, next) => {
-    const Client_ID = req.params.Client_ID;
+    const Client_ID = req.params.ID;
     const {phones} = req.body;
 
     const sql_query = `SELECT * FROM client_table
@@ -276,7 +276,7 @@ export const read_Notification = (req, res, next) => {
     })    
 }
 export const delete_Notification = (req, res, next) => {
-    const Driver_ID = req.params.DriverID;
+    const Driver_ID = req.params.ID;
 
     const sql_query = `DELETE FROM Notification_Table 
     WHERE Driver_ID = ${Driver_ID}`;
@@ -313,7 +313,7 @@ export const create_cancelled_trip = (req, res, next) => {
 }
 
 export const delete_cancelled_trip = (req, res, next) => {
-    const Driver_ID = req.params.DriverID;
+    const Driver_ID = req.params.ID;
 
     const sql_query = `delete from Cancellation 
     where Driver_ID = ${Driver_ID};`;

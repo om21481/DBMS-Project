@@ -25,7 +25,7 @@ export const create_Driver = (req, res, next) => {
 }
 
 export const update_Driver = (req, res, next) => {
-    const Driver_ID = req.params.DriverID;
+    const Driver_ID = req.params.ID;
     const {FirstName, LastName, DOB, Email, Password} = req.body;
 
     try {
@@ -51,7 +51,7 @@ export const update_Driver = (req, res, next) => {
 }
 
 export const update_Driver_location = (req, res, next) => {
-    const Driver_ID = req.params.DriverID;
+    const Driver_ID = req.params.ID;
     const {Current_lat, Current_long} = req.body;
 
     const sql_query = `UPDATE Driver_Table 
@@ -69,7 +69,7 @@ export const update_Driver_location = (req, res, next) => {
 }
 
 export const delete_Driver = (req, res, next)=>{
-    const Driver_ID = req.params.DriverID;
+    const Driver_ID = req.params.ID;
 
     const sql_query = `DELETE FROM Driver_Table 
     WHERE Driver_ID = ${Driver_ID}`;
@@ -85,7 +85,7 @@ export const delete_Driver = (req, res, next)=>{
 }
 
 export const get_Driver = (req, res, next)=>{
-    const Driver_ID = req.params.DriverID;
+    const Driver_ID = req.params.ID;
 
     const sql_query = `SELECT * FROM Driver_Table 
     WHERE Driver_ID = ${Driver_ID}`;
@@ -100,7 +100,7 @@ export const get_Driver = (req, res, next)=>{
     })
 }
 export const get_Driver_all = (req, res, next)=>{
-    const Driver_ID = req.params.Driver_ID;
+    const Driver_ID = req.params.ID;
 
     const sql_query = `SELECT * FROM Driver_Table
     WHERE Driver_ID = ${Driver_ID};`;
@@ -116,7 +116,7 @@ export const get_Driver_all = (req, res, next)=>{
 }
 
 export const add_phone_Driver = (req, res, next) => {
-    const Driver_ID = req.params.Driver_ID;
+    const Driver_ID = req.params.ID;
     const {phones} = req.body;
 
     const sql_query = `SELECT * FROM Driver_Table
@@ -137,7 +137,7 @@ export const add_phone_Driver = (req, res, next) => {
 
 
 export const is_Busy_update = (req, res, next) => {
-    const Driver_ID = req.params.Driver_ID;
+    const Driver_ID = req.params.ID;
     const {set_to} = req.body;
 
     const sql_query = `UPDATE Driver_Table 
@@ -156,7 +156,7 @@ export const is_Busy_update = (req, res, next) => {
 
 // location updations and creations
 export const create_Driver_locations = (req, res, next) => {
-    const Driver_ID = req.params.DriverID;
+    const Driver_ID = req.params.ID;
     const {Current_lat, Current_long} = req.body;
 
     const sql_query = `INSERT INTO Driver_Locations (Driver_ID, latitude, longitude) 
@@ -174,7 +174,7 @@ export const create_Driver_locations = (req, res, next) => {
 
 // by admin only
 export const get_all_driver_locations = (req, res, next) => {
-    const Driver_ID = req.params.DriverID;
+    const Driver_ID = req.params.ID;
 
     const sql_query = `select * from Driver_Locations 
     where Driver_ID = ${Driver_ID};`;
@@ -193,7 +193,7 @@ export const get_all_driver_locations = (req, res, next) => {
 
 // update Notifications Table
 export const update_Notification_Table = (req, res, next) => {
-    const Driver_ID = req.params.DriverID;
+    const Driver_ID = req.params.ID;
     const {attribute} = req.body;
 
     const sql_query = ``;

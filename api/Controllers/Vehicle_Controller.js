@@ -2,7 +2,7 @@ import db from "../index.js";
 import { createError } from "../utils/createError.js";
 
 export const create_Vehicle = (req, res, next) => {
-    const Driver_ID = req.params.DriverID;
+    const Driver_ID = req.params.ID;
     const {Vehicle_Name, Colour, RC_Number, Pollution_ID, Chasis_Number, Vehicle_Number} = req.body;
 
     const sql_query = `INSERT INTO Vehicle_Table 
@@ -19,7 +19,7 @@ export const create_Vehicle = (req, res, next) => {
 }
 
 export const update_Vehicle = (req, res, next) => {
-    const Driver_ID = req.params.DriverID;
+    const Driver_ID = req.params.ID;
     const {Vehicle_Name, Colour, RC_Number, Pollution_ID, Chasis_Number, Vehicle_Number} = req.body;
 
     const sql_query = `UPDATE Vehicle_Table 
@@ -37,7 +37,7 @@ export const update_Vehicle = (req, res, next) => {
 }
 
 export const update_registration = (req, res, next) => {
-    const Driver_ID = req.params.DriverID;
+    const Driver_ID = req.params.ID;
 
     const sql_query = `UPDATE Vehicle_Table 
     SET is_registered = true WHERE Driver_ID = ${Driver_ID}`;
@@ -53,7 +53,7 @@ export const update_registration = (req, res, next) => {
 }
 
 export const get_Vehicle = (req, res, next)=>{
-    const Driver_ID = req.params.DriverID;
+    const Driver_ID = req.params.ID;
 
     const sql_query = `SELECT * FROM Vehicle_Table  
     WHERE Driver_ID = ${Driver_ID}`;
@@ -68,7 +68,7 @@ export const get_Vehicle = (req, res, next)=>{
     })
 }
 export const get_Vehicle_all = (req, res, next)=>{
-    const Driver_ID = req.params.Driver_ID;
+    const Driver_ID = req.params.ID;
 
     const sql_query = `SELECT * FROM Vehicle_Table ;`;
 
@@ -83,7 +83,7 @@ export const get_Vehicle_all = (req, res, next)=>{
 }
 
 export const delete_Vehicle = (req, res, next) => {
-    const Driver_ID = req.params.Driver_ID;
+    const Driver_ID = req.params.ID;
 
     const sql_query = `DELETE FROM Vehicle_Table 
     WHERE Driver_ID = ${Driver_ID}`;

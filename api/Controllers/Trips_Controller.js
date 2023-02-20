@@ -2,7 +2,7 @@ import db from "../index.js";
 import { createError } from "../utils/createError.js";
 
 export const create_trips = (req, res, next)=>{
-    const Client_ID = req.params.Client_ID;
+    const Client_ID = req.params.ID;
     const {
     Driver_ID,
     End_Lat,
@@ -64,7 +64,7 @@ export const get_trip = (req, res, next)=>{
     })
 }
 export const get_trips_Client = (req, res, next)=>{
-    const Client_ID = req.params.Client_ID;
+    const Client_ID = req.params.ID;
     
     const sql_query = `SELECT * FROM Trips_Table 
     WHERE Client_ID = ${Client_ID};`;
