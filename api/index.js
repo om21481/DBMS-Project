@@ -2,6 +2,7 @@ import Express  from "express";
 import mysql from "mysql2";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
+import cors from "cors"
 dotenv.config()
 
 import Trips_Router from "./Routes/Trips.js"
@@ -28,8 +29,13 @@ db.connect((err) => {
 })
 
 
+// ------------------- when in development mode   ---------
+// app.use(Express.static("/folder_name"));
+// --------------------------------------------------------
+
 app.use(Express.json())
 app.use(cookieParser())
+app.use(cors())
 app.use("/Trips", Trips_Router);
 app.use("/auth", Auth_Router);
 app.use("/Client", ClientRouter);
@@ -51,6 +57,31 @@ app.use((err, req, res, next) => {
 app.get("/", (req, res) => {
     res.json("Server designed by om garg")
 })
+
+
+
+// --------------------------------------- for testig purposes
+
+app.get("/test_locations", (req, res) => {
+
+    const sql_query = `select D_Current_Location_lat, D_Current_Location_long from 
+    ((select Driver_ID from driver_table where (28.54741 - D_Current_Location_lat)*(28.54741 - D_Current_Location_lat)
+     + (77.27340 - D_Current_Location_long) * (77.27340 - D_Current_Location_long) <= 2*0.015060*2*0.015060 and is_busy = false
+    ) intersect select Driver_ID from verification where Accepted_Drivers = true) As T 
+    natural join Driver_Table;`;
+
+
+    db.query(sql_query, (err, response, feilds) => {
+        if(err){
+            return;
+        }
+
+        res.status(200).json(response);
+    })
+})
+
+
+
 
 app.listen(8000, () => {
     console.log("Listening on port 8000");

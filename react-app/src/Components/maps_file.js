@@ -1,5 +1,7 @@
 import mapboxgl from "mapbox-gl";
 import MapboxDirections from "@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions"
+import { getData } from "../requests/getData";
+import axios from "axios";
 
 mapboxgl.accessToken =
   "pk.eyJ1Ijoib20yMTQ4MSIsImEiOiJjbGRobTBreDUxM2w1M3F0NTd4ZG01ZXEzIn0.l7-GFstLQOdYhnkUMbHukQ"
@@ -50,21 +52,30 @@ export function setupMap(center) {
     .setLngLat(center)
     .addTo(map);
 
+    // adding markers
+    async function add_markers(){
+      const markers = await Adding_Cars(map);
+      console.log(markers);
+      setInterval(() => {Updating_locations(markers)}, 5000);
+    }
+
+    add_markers()
 }
 
-export function add_marker(map, coordinates, link){
-  console.log(coordinates);
-    var el = document.createElement('div');
-    el.className = 'marker';
-    el.style.backgroundImage = `url(${link})`;
-    el.style.width = '30px';
-    el.style.height = '30px';
-    el.style.borderRadius = '25px';
-    el.style.backgroundPosition = 'center center';
+export function add_marker(map, coordinates){
 
-    new mapboxgl.Marker(el)
+    var el = document.createElement('img');
+    el.className = 'car_marker';
+    el.style.width = '40px';
+    el.style.height = '23px';
+    el.src = "black uber.png"
+
+    let marker = new mapboxgl.Marker(el)
     .setLngLat(coordinates)
     .addTo(map);
+
+    return marker;
+
 }
 
 export const input_values = () => {
@@ -75,6 +86,48 @@ export const input_values = () => {
         Distance: document.getElementsByClassName('mapbox-directions-component mapbox-directions-route-summary')[0].children[1].textContent
     })
 }
+
+const Adding_Cars = async(map) => {
+  try{
+    const res = await axios.get(`http://127.0.0.1:8000/test_locations`);
+    
+    const data = res.data;
+    let markers = [];
+
+    data.map((coordinates) => {
+      let marker = add_marker(map, [coordinates.D_Current_Location_long,coordinates.D_Current_Location_lat])
+      markers.push(marker);
+    })
+
+    return markers;
+
+  }
+  catch(err){
+      return;
+  }
+}
+
+const Updating_locations = async(markers) => {
+  console.log("called");
+  try{
+    const res = await axios.get(`http://127.0.0.1:8000/test_locations`);
+    
+    const data = res.data;
+
+    for(let i=0; i<markers.length;i++){
+      markers[i].setLngLat([data[i].D_Current_Location_long,data[i].D_Current_Location_lat])
+    }
+
+  }
+  catch(err){
+      return;
+  }
+}
+
+// 77.27301,28.54961
+
+
+
 
 
 // how to make requests with mapboxgl

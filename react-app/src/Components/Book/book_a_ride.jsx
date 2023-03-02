@@ -1,8 +1,11 @@
 import React from "react";
 import Navbar from "../Navbar";
 import { successLocation, errorLocation, setupMap, map } from "../maps_file.js";
+import {useNavigate} from "react-router-dom";
 
 const BookARide = () => {
+    const navigate = useNavigate();
+
     return(
         <div className="bg-black w-[100vw] h-[100vh]">
             <Navbar/>
@@ -19,7 +22,7 @@ const BookARide = () => {
                         <div className=" w-[1.5px] bg-white h-[40%]"></div>
                     </div>
                     <div className="w-[45%] h-full flex justify-center items-center">
-                            <button className="w-[65%] h-[80%] bg-[#FFD400] rounded-3xl text-white text-2xl" style={{backgroundImage: "linear-gradient(45deg,hsl(240deg 100% 20%) 0%,hsl(289deg 100% 21%) 11%,hsl(315deg 100% 27%) 22%,hsl(329deg 100% 36%) 33%,hsl(337deg 100% 43%) 44%,hsl(357deg 91% 59%) 56%,hsl(17deg 100% 59%) 67%,hsl(34deg 100% 53%) 78%,hsl(45deg 100% 50%) 89%,hsl(55deg 100% 50%) 100%)"}}>BOOK NOW</button>
+                            <button className="w-[65%] h-[80%] bg-[#FFD400] rounded-3xl text-white text-2xl" style={{backgroundImage: "linear-gradient(45deg,hsl(240deg 100% 20%) 0%,hsl(289deg 100% 21%) 11%,hsl(315deg 100% 27%) 22%,hsl(329deg 100% 36%) 33%,hsl(337deg 100% 43%) 44%,hsl(357deg 91% 59%) 56%,hsl(17deg 100% 59%) 67%,hsl(34deg 100% 53%) 78%,hsl(45deg 100% 50%) 89%,hsl(55deg 100% 50%) 100%)"}} onClick={() => {navigate("/MakeTrips")}}>BOOK NOW</button>
                     </div>
                 </div>
 

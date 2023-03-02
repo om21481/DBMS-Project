@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import Trips from './Trips.jsx';
 import Navbar from '../Navbar.jsx';
-import { successLocation, errorLocation, setupMap, map, input_values} from '../maps_file.js';
+import { successLocation, errorLocation, setupMap, map, input_values, add_marker} from '../maps_file.js';
 import "./maps_style.css"
 // import dotenv from 'dotenv'
 
@@ -29,6 +29,7 @@ const MakeTrips = () => {
                 <div id='map' className="w-[98%] h-[70%] rounded-2xl fixed" 
 
                 onClick={() => {setData(input_values())}} 
+                
                 onMouseEnter={() => {setData(input_values())}} 
                 onMouseLeave={() => {setData(input_values())}}></div>
 
