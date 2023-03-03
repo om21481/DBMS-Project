@@ -3,15 +3,15 @@ import React from "react";
 export const CustomerContext = React.createContext();
 
 export const Customer_Details = ({childeren}) => {
-    const [name, setName] = React.useState("om garg");
-    const [email, setEmail] = React.useState("om21481@iiitd.ac.in");
+    const [details, setDetails] = React.useState();
+    const [login, setlogin] = React.useState(false);
 
     return (
         <CustomerContext.Provider value = {{
-            name,
-            setName,
-            email,
-            setEmail
+            details,
+            setDetails,
+            login,
+            setlogin
         }}>
             {childeren}
         </CustomerContext.Provider>

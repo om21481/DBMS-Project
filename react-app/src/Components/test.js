@@ -1,16 +1,25 @@
 import React from "react";
 import axios from "axios";
-import { useFetch } from "../requests/useFetch";
-
-import { CustomerContext } from "../requests/useContext";
 
 const Test = () => {
-    
-    const data = useFetch("/test_locations").data;
+    const [coordiantes, setCoordiantes] = React.useState();
+    navigator.geolocation.getCurrentPosition((coor) => {
+        setCoordiantes([coor.coords.longitude, coor.coords.latitude])
+    });
+    const fun = async() => {
+        try {
+            const res = await axios.post(`http://127.0.0.1:8000/Client/drivers_nearby/2`, {
+                curr_long: coordiantes[0],
+                curr_lat: coordiantes[1]
+            });
 
-    console.log(data);
+            const data = res.data;
+            
+        } catch (error) {
+            console.log(error);
+        }
 
-    console.log("The name is : ", React.useContext(CustomerContext));
+    }
 
     return(
         <>

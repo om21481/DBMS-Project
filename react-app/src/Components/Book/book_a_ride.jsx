@@ -2,9 +2,24 @@ import React from "react";
 import Navbar from "../Navbar";
 import { successLocation, errorLocation, setupMap, map } from "../maps_file.js";
 import {useNavigate} from "react-router-dom";
+import { CustomerContext } from "../../requests/useContext";
+import Cookies from "js-cookie";
+import "./map_st.css"
 
 const BookARide = () => {
     const navigate = useNavigate();
+
+    const {setlogin, setDetails, login, details} = React.useContext(CustomerContext);
+
+    React.useEffect(() => {
+        const value = Cookies.get('auth');
+        
+        if(value){
+            setlogin(true);
+            setDetails(JSON.parse(value))    
+        }
+
+    }, [])
 
     return(
         <div className="bg-black w-[100vw] h-[100vh]">
@@ -31,7 +46,7 @@ const BookARide = () => {
                 </div>
 
                 <div className="w-full h-[35%] p-2">
-                    <div id='map' className="w-full h-full rounded-3xl" ></div>
+                    <div id='map' className="w-full h-full rounded-3xl map-with-no-search" ></div>
                 </div>
             </div>
         </div>

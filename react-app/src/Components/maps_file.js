@@ -1,6 +1,5 @@
 import mapboxgl from "mapbox-gl";
 import MapboxDirections from "@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions"
-import { getData } from "../requests/getData";
 import axios from "axios";
 
 mapboxgl.accessToken =
@@ -45,18 +44,15 @@ export function setupMap(center) {
     el.style.width = '15px';
     el.style.height = '15px';
     el.style.borderRadius = '25px';
-
-    console.log(center);
     
     new mapboxgl.Marker(el)
     .setLngLat(center)
     .addTo(map);
 
     // adding markers
-    async function add_markers(){
-      const markers = await Adding_Cars(map);
-      console.log(markers);
-      setInterval(() => {Updating_locations(markers)}, 5000);
+    async function add_markers(){      
+      const markers = await Adding_Cars(map, center);
+      setInterval(() => {Updating_locations(markers, center)}, 5000);
     }
 
     add_markers()
@@ -87,11 +83,15 @@ export const input_values = () => {
     })
 }
 
-const Adding_Cars = async(map) => {
+const Adding_Cars = async(map, center) => {
   try{
-    const res = await axios.get(`http://127.0.0.1:8000/test_locations`);
+    const res = await axios.post(`http://127.0.0.1:8000/Client/drivers_nearby/2`, {
+      curr_long: center[0],
+      curr_lat: center[1]
+    });
     
     const data = res.data;
+    console.log(data);
     let markers = [];
 
     data.map((coordinates) => {
@@ -107,10 +107,12 @@ const Adding_Cars = async(map) => {
   }
 }
 
-const Updating_locations = async(markers) => {
-  console.log("called");
+const Updating_locations = async(markers, center) => {
   try{
-    const res = await axios.get(`http://127.0.0.1:8000/test_locations`);
+    const res = await axios.post(`http://127.0.0.1:8000/Client/drivers_nearby/2`, {
+      curr_long: center[0],
+      curr_lat: center[1]
+    });
     
     const data = res.data;
 
@@ -124,7 +126,6 @@ const Updating_locations = async(markers) => {
   }
 }
 
-// 77.27301,28.54961
 
 
 

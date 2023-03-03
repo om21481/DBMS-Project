@@ -6,21 +6,22 @@ import { Customer_Details } from "../requests/useContext";
 import {BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Test from "../Components/test.js";
+import Login from "../Components/login-signup/Login.js";
 
 const Client = () => {
     return(
         <Customer_Details childeren = {
             <>
-            {/* <BrowserRouter>
+            <BrowserRouter>
                 <Routes>
 
                     <Route path='/' element={<BookARide/>}/>
                     <Route path="/MakeTrips" element={<Make_Trips/>}/>
+                    <Route path="/Login" element={<Login/>}/>
+                    <Route path="/Test" element={<Test/>}/>
                 
                 </Routes>
-            </BrowserRouter> */}
-
-            <Test/>
+            </BrowserRouter>
             </>   
         }/>
     )
