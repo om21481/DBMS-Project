@@ -7,6 +7,7 @@ import {BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Test from "../Components/test.js";
 import Login from "../Components/login-signup/Login.js";
+import SignUp from "../Components/login-signup/SignUp.js"
 
 const Client = () => {
     return(
@@ -18,6 +19,7 @@ const Client = () => {
                     <Route path='/' element={<BookARide/>}/>
                     <Route path="/MakeTrips" element={<Make_Trips/>}/>
                     <Route path="/Login" element={<Login/>}/>
+                    <Route path="/SignUp" element={<SignUp/>}/>
                     <Route path="/Test" element={<Test/>}/>
                 
                 </Routes>

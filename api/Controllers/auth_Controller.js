@@ -101,13 +101,8 @@ export const login = async (req, res, next) => {
                             );
 
                             let {C_Password, ...otherDetails } = user;
-                
-                            res
-                            .cookie("access_token", token, {
-                                httpOnly: true,
-                            })
-                            .status(200)
-                            .json({ details: { ...otherDetails }, isAdmin });
+
+                            res.status(200).json({ details: { ...otherDetails }, isAdmin, token });
                         }
                         else if(person === "Driver"){
                             const isPasswordCorrect = await bcrypt.compare(
@@ -123,13 +118,8 @@ export const login = async (req, res, next) => {
                             );
 
                             let {D_Password, ...otherDetails } = user;
-                
-                            res
-                            .cookie("access_token", token, {
-                                httpOnly: true,
-                            })
-                            .status(200)
-                            .json({ details: { ...otherDetails }, isAdmin });
+                            
+                            res.status(200).json({ details: { ...otherDetails }, isAdmin, token });
                         }
                         else{
                             return next(createError(400, "Please enter as a client or driver"));

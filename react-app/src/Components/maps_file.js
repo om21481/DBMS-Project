@@ -1,6 +1,8 @@
 import mapboxgl from "mapbox-gl";
 import MapboxDirections from "@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions"
 import axios from "axios";
+import Cookies from "js-cookie";
+import { post_data } from "../requests/useFetch";
 
 mapboxgl.accessToken =
   "pk.eyJ1Ijoib20yMTQ4MSIsImEiOiJjbGRobTBreDUxM2w1M3F0NTd4ZG01ZXEzIn0.l7-GFstLQOdYhnkUMbHukQ"
@@ -50,12 +52,23 @@ export function setupMap(center) {
     .addTo(map);
 
     // adding markers
-    async function add_markers(){      
-      const markers = await Adding_Cars(map, center);
-      setInterval(() => {Updating_locations(markers, center)}, 5000);
+    async function add_markers(ID, token){      
+      const markers = await Adding_Cars(map, center, ID, token);
+      if(markers){
+        setInterval(() => {Updating_locations(markers, center, ID, token)}, 5000);
+      }
     }
 
-    add_markers()
+    // to retrieve Client ID
+    const cookie_data = Cookies.get("auth");
+    const token = Cookies.get("serv_auth");
+    if(cookie_data){
+      const Client_ID = JSON.parse(cookie_data).details.Client_ID;
+      add_markers(Client_ID, token)
+    }
+    else{
+      console.log("Please do the login part");
+    }
 }
 
 export function add_marker(map, coordinates){
@@ -83,36 +96,43 @@ export const input_values = () => {
     })
 }
 
-const Adding_Cars = async(map, center) => {
+const Adding_Cars = async(map, center, ID, token) => {
   try{
-    const res = await axios.post(`http://127.0.0.1:8000/Client/drivers_nearby/2`, {
+    const res = await post_data(`/Client/drivers_nearby/${ID}/${token}`, {
       curr_long: center[0],
-      curr_lat: center[1]
-    });
-    
-    const data = res.data;
-    console.log(data);
-    let markers = [];
-
-    data.map((coordinates) => {
-      let marker = add_marker(map, [coordinates.D_Current_Location_long,coordinates.D_Current_Location_lat])
-      markers.push(marker);
+      curr_lat: center[1],
+      distance: 2
     })
-
-    return markers;
+    
+    const data = res;
+    if(data){
+      let markers = [];
+  
+      data.map((coordinates) => {
+        let marker = add_marker(map, [coordinates.D_Current_Location_long,coordinates.D_Current_Location_lat])
+        markers.push(marker);
+      })
+  
+      return markers;
+    }
+    else{
+      return undefined;
+    }
 
   }
   catch(err){
-      return;
+      return;         // error needs to be created here
   }
 }
 
-const Updating_locations = async(markers, center) => {
+const Updating_locations = async(markers, center, ID, token) => {
   try{
-    const res = await axios.post(`http://127.0.0.1:8000/Client/drivers_nearby/2`, {
+
+    const res = await post_data(`/Client/drivers_nearby/${ID}/${token}`, {
       curr_long: center[0],
-      curr_lat: center[1]
-    });
+      curr_lat: center[1],
+      distance: 2
+    })
     
     const data = res.data;
 

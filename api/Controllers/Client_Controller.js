@@ -142,7 +142,7 @@ export const add_phone_Client = (req, res, next) => {
 // this will give the drivers near the client who is not busy
 export const drivers_nearby = (req, res, next) => {
     const {curr_lat, curr_long} = req.body;
-    let distance = req.params.distance;
+    let {distance} = req.body;
     distance = (distance*0.015060)*(distance*0.015060);
 
     const sql_query = `select D_Current_Location_lat, D_Current_Location_long from 
