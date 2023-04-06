@@ -3,9 +3,7 @@ import Trips from './Trips.jsx';
 import Navbar from '../Navbar.jsx';
 import { successLocation, errorLocation, setupMap, map, input_values, add_marker} from '../maps_file.js';
 import "./maps_style.css"
-// import dotenv from 'dotenv'
-
-// dotenv.config()
+import { Toast_Container, createError } from '../../requests/createErrors.js';
 
 
 const MakeTrips = () => {
@@ -15,11 +13,18 @@ const MakeTrips = () => {
     React.useEffect(() => {
         if(data) {
             console.log(data);
-            Set_show_trips(true);
+            
+            // if data is string the show that please choose specific location
+            if((data.Source[0] >= '0' && data.Source[0] <= '9') && (data.Destination[0] >= '0' && data.Destination[0] <= '9')){
+                Set_show_trips(true);
+            }
+            else{
+                createError("Please specify a location near to the specified location") 
+            }
         }
-    })
+    }, [data])
 
-
+    // here only we will create prices and pass the prices as props in Trips.jsx
     return(
         <>
         <div className='bg-black w-[100vw] h-[100vh]'>
@@ -30,12 +35,14 @@ const MakeTrips = () => {
 
                 onClick={() => {setData(input_values())}} 
                 
-                onMouseEnter={() => {setData(input_values())}} 
+                // onMouseEnter={() => {setData(input_values())}} 
                 onMouseLeave={() => {setData(input_values())}}></div>
 
             </div>
 
-            {show_trips ? <Trips/> : ""}
+            {show_trips ? <Trips data = {data}/> : ""}
+
+            <Toast_Container/>
         </div>
         </>
     )

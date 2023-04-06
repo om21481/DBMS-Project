@@ -1,13 +1,15 @@
 import React from "react";
 import Navbar from "../Navbar";
+import { useNavigate } from "react-router-dom";
+import { TripsContext } from "../../requests/useContext";
 
-const Trips = () => {
+const Trips = ({data}) => {
     const [image, setImage] = React.useState('Primere-class-vehicle_clipdrop-background-removal 1.png');
     const [name, setName] = React.useState('Taxi Priemer');
 
     const [time, setTime] = React.useState('00:00');
     const [time_away, setTime_away] = React.useState('1');
-    const [price, setPrice] = React.useState('0.000');
+    // const [price, setprice] = React.useState('0.000');
 
     const [time_hatch, setTime_hatch] = React.useState('00:00');
     const [time_away_hatch, setTime_away_hatch] = React.useState('1');
@@ -24,6 +26,9 @@ const Trips = () => {
     const [time_luxury, setTime_luxury] = React.useState('00:00');
     const [time_away_luxury, setTime_away_luxury] = React.useState('1');
     const [price_luxury, setPrice_luxury] = React.useState('0.000');
+
+    const {setData, setPrice, price} = React.useContext(TripsContext);
+    const navigate = useNavigate();
 
     const fun = (img, name, time, time_away, price) => {
         setImage(img);
@@ -94,7 +99,14 @@ const Trips = () => {
                             </div>
                         </div>
                         <div className="w-full flex items-center h-[20%] justify-center ">
-                            <button className="w-[80%] h-[80%] bg-[#D90368] rounded-2xl text-white text-2xl">Confirm Ride</button>
+                            <button className="w-[80%] h-[80%] bg-[#D90368] rounded-2xl text-white text-2xl" onClick={() => {
+                                console.log("hello");
+                                console.log(data);
+                                setData(data);
+                                
+                                navigate("/Confirm_ride")
+                                window.location.reload()
+                            }}>Confirm Ride</button>
                         </div>
                     </div>
                 </div>

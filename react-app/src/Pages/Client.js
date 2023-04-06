@@ -8,6 +8,7 @@ import {BrowserRouter, Routes, Route } from "react-router-dom";
 import Test from "../Components/test.js";
 import Login from "../Components/login-signup/Login.js";
 import SignUp from "../Components/login-signup/SignUp.js"
+import ConfirmRide from "../Components/ConfirmRide.jsx";
 
 const Client = () => {
     return(
@@ -21,11 +22,13 @@ const Client = () => {
                     <Route path="/Login" element={<Login/>}/>
                     <Route path="/SignUp" element={<SignUp/>}/>
                     <Route path="/Test" element={<Test/>}/>
+                    <Route path="/Confirm_ride" element={<ConfirmRide/>}/>
                 
                 </Routes>
             </BrowserRouter>
-            </>   
-        }/>
+            </> 
+        }>
+        </Customer_Details>
     )
 }
 
