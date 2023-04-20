@@ -1,5 +1,6 @@
 import React from "react"
 import axios from "axios"
+import { createError } from "./createErrors";
 
 export const Get_Data_Component = (url) => {
     const [data, setData] = React.useState();
@@ -57,7 +58,7 @@ export const get_data = async(url) => {
         return res.data;
     }
     catch(err){
-        return new Error("Error in getting the data from the server");
+        return undefined;
     }
 }
 
@@ -67,6 +68,6 @@ export const post_data = async(url, data) => {
         return res.data;
     }
     catch(err){
-        return new Error("Error in getting the data from the server");
+        return undefined;
     }
 }

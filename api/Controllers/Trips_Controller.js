@@ -9,24 +9,37 @@ export const create_trips = (req, res, next)=>{
     End_Long, 
     Start_Lat, 
     Start_Long, 
-    Amount, 
-    Payment_Mode, 
-    Distance_Trip, 
-    TimeStamp_Pay} = req.body;
+    Amount,
+    Distance_Trip} = req.body;
 
-    const Trip_ID = Client_ID + Driver_ID + TimeStamp_Pay;
-    const sql_query = `INSERT INTO Trips_Table (Trip_ID, Client_ID, Driver_ID, End_Lat, End_Long, Start_Lat, Start_Long, Amount, Payment_Mode, Distance_Trip, TimeStamp_Pay) VALUES 
-    (${Trip_ID}, ${Client_ID}, ${Driver_ID}, ${End_Lat}, ${End_Long}, ${Start_Lat}, ${Start_Long}, ${Amount}, ${Payment_Mode}, ${Distance_Trip}, ${TimeStamp_Pay});`;
+    const currentdate = new Date();
+    // const TimeStamp_Pay = TimeStamp.toLocaleDateString().split("/").reverse().join("-") + " " + TimeStamp.toLocaleTimeString().slice(0, 8);
+    let date = currentdate.getDate();
+    let month = currentdate.getMonth() + 1;
+    if(date <= 9){
+        date = "0" + date;
+    }
+    if(month <= 9){
+        month = "0" + month;
+    }
+
+    const TimeStamp_Pay = currentdate.getFullYear() + "-" + month + "-" + date + " " + currentdate.getHours() + ":" + currentdate.getMinutes() + ":" + currentdate.getSeconds();
+    const Trip_ID = Client_ID + "_" + Driver_ID + "_" + TimeStamp_Pay;
+
+    const sql_query = `INSERT INTO Trips_Table (Trip_ID, Client_ID, Driver_ID, End_Lat, End_Long, Start_Lat, Start_Long, Amount, Distance_Trip, TimeStamp_Pay) VALUES 
+    ('${Trip_ID}', ${Client_ID}, ${Driver_ID}, ${End_Lat}, ${End_Long}, ${Start_Lat}, ${Start_Long}, ${Amount}, ${Distance_Trip}, '${TimeStamp_Pay}');`;
 
     db.query(sql_query, (err, response, feilds) => {
         if(err){
             next(createError(404, "Page not found"));
         }
-        console.log(response);
+
+        // console.log(response);
         res.status(200).send("Trips Created Succesfully");
     })
 }
 
+// this is for feed back
 export const update_trips = (req, res, next)=>{
     const {
     Trip_ID,

@@ -2,11 +2,13 @@ import React from "react";
 import Navbar from "../Navbar";
 import { successLocation, errorLocation, setupMap, map } from "../maps_file.js";
 import {useNavigate} from "react-router-dom";
-import { CustomerContext } from "../../requests/useContext";
+import { CustomerContext, TripsContext } from "../../requests/useContext";
 import Cookies from "js-cookie";
 import "./map_st.css"
 
 const BookARide = () => {
+    const {main_data} = React.useContext(TripsContext)
+    console.log(main_data);
     const navigate = useNavigate();
 
     const {setlogin, setDetails, login, details} = React.useContext(CustomerContext);

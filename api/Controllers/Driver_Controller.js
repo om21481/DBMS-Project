@@ -115,6 +115,22 @@ export const get_Driver_all = (req, res, next)=>{
     })
 }
 
+export const get_Driver_location = (req, res, next)=>{
+    const Driver_ID = req.params.ID;
+
+    const sql_query = `SELECT D_Current_Location_lat, D_Current_Location_long FROM Driver_Table
+    WHERE Driver_ID = ${Driver_ID};`;
+
+    db.query(sql_query, (err, response, feilds) => {
+        if(err){
+            res.status(404).send("Page not found");
+            return;
+        }
+
+        res.status(200).json(response);
+    })
+}
+
 export const add_phone_Driver = (req, res, next) => {
     const Driver_ID = req.params.ID;
     const {phones} = req.body;
@@ -227,3 +243,51 @@ export const update_Notification_Table = (req, res, next) => {
 
 }
 
+
+export const update_Cancel_Email = (req, res, next) => {
+    const Driver_ID = req.params.ID;
+
+    const sql_query =  `UPDATE Verification 
+    SET Cancel_Email = Cancel_Email + 1 
+    WHERE DRIVER_ID = ${Driver_ID};`
+
+    db.query(sql_query, (err, response, feilds) => {
+        if(err){
+            next(createError(404, err));
+        }
+
+        res.status(200).send("Driver Updated Successfully")
+    })
+}
+
+// Notification Table   --     It is for driver only
+export const read_Notification = (req, res, next) => {
+    const Driver_ID = req.params.ID;
+
+    const sql_query = `SELECT * FROM Notification_Table
+    WHERE Driver_ID = ${Driver_ID};`;
+
+    db.query(sql_query, (err, response, feilds) => {
+        if(err){
+            res.status(404).send("Page not found");
+            return;
+        }
+
+        res.status(200).json(response);
+    })    
+}
+export const delete_Notification = (req, res, next) => {
+    const Driver_ID = req.params.ID;
+
+    const sql_query = `DELETE FROM Notification_Table 
+    WHERE Driver_ID = ${Driver_ID}`;
+
+    db.query(sql_query, (err, response, feilds) => {
+        if(err){
+            next(createError(404, "Page not found"));
+            return;
+        }
+        console.log(response);
+        res.status(200).send("Notification Deleted Succesfully");
+    })
+}

@@ -12,6 +12,8 @@ import Driver_Router from "./Routes/Driver.js"
 import Vehicle_Router from "./Routes/Vehicle.js"
 import Admin_Router from "./Routes/admin.js"
 
+import OLAP from "./Routes/OLAP.js"
+
 const app = new Express();
 
 const db = mysql.createConnection({
@@ -42,6 +44,7 @@ app.use("/Client", ClientRouter);
 app.use("/Driver", Driver_Router);
 app.use("/Vehicle", Vehicle_Router);
 app.use("/Admin", Admin_Router);
+app.use("/OLAP", OLAP);
 
 app.use((err, req, res, next) => {
   const errorStatus = err.status || 500;

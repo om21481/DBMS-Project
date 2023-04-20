@@ -52,3 +52,9 @@ major: how to use php myadmin with server when hosting
 
 
 setting up mysql with nodejs full -- https://www.youtube.com/watch?v=344Zv2m9TYI
+
+
+
+
+
+loading animation: https://giphy.com/gifs/hand-bored-waiting-xTkcEQACH24SMPxIQg

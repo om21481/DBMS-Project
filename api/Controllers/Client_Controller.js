@@ -101,7 +101,7 @@ export const get_Client = (req, res, next)=>{
     })
 }
 export const get_Client_all = (req, res, next)=>{
-    const Client_ID = req.params.Client_ID;
+    const Client_ID = req.params.ID;
 
     const sql_query = `SELECT * FROM client_table
     WHERE Client_ID = ${Client_ID};`;
@@ -162,17 +162,17 @@ export const drivers_nearby = (req, res, next) => {
 
 }
 
-// this will give the drivers near the client who is not busy and order them by ratings and give the top one
+// this will give the drivers near the client who is not busy and order them by ratings and give the top 3 of them who are not busy
 export const drivers_nearby_type = (req, res, next) => {
+    
     const {curr_lat, curr_long} = req.body;
     let distance = req.params.distance;
     distance = (distance*0.015060)*(distance*0.015060);
 
-    const sql_query = `select * from ((select Driver_ID from 
-        driver_table where 
+    const sql_query = `select * from ((select Driver_ID from driver_table where 
         (${curr_lat} - D_Current_Location_lat) * (${curr_lat} - D_Current_Location_lat) + (${curr_long} - D_Current_Location_long) * (${curr_long} - D_Current_Location_long) <= ${distance} and is_busy = false
     ) intersect select Driver_ID from verification where Accepted_Drivers = true intersect select Driver_ID from Vehicle_Table where Road_Type = 'HIGHWAY') As T
-    natural join Driver_Table order by Rating desc;`;
+    natural join Driver_Table order by Rating desc limit 3;`;
 
     db.query(sql_query, (err, response, feilds) => {
         if(err){
@@ -184,7 +184,6 @@ export const drivers_nearby_type = (req, res, next) => {
     })
 
 }
-
 
 // we will be given a array here
 export const create_rejected_drivers = (req, res, next) => {
@@ -252,19 +251,19 @@ export const create_Notification = (req, res, next) => {
 
     db.query(sql_query, (err, response, feilds) => {
         if(err){
-            throw new Error("Error in Creating a client");
+            res.status(404).send("Page not found");
+            return
         }
 
-        console.log(response);
         res.status(200).send("Notification is Created Successfully")
     })
 
 }
 export const read_Notification = (req, res, next) => {
-    const Driver_ID = req.params.DriverID;
+    const {Driver_ID} = req.body;
 
     const sql_query = `SELECT * FROM Notification_Table
-    WHERE Driver_ID = ${Driver_ID};`;
+    WHERE Driver_ID = ${Driver_ID} limit 1;`;
 
     db.query(sql_query, (err, response, feilds) => {
         if(err){
@@ -275,31 +274,15 @@ export const read_Notification = (req, res, next) => {
         res.status(200).json(response);
     })    
 }
-export const delete_Notification = (req, res, next) => {
-    const Driver_ID = req.params.ID;
-
-    const sql_query = `DELETE FROM Notification_Table 
-    WHERE Driver_ID = ${Driver_ID}`;
-
-    db.query(sql_query, (err, response, feilds) => {
-        if(err){
-            next(createError(404, "Page not found"));
-            return;
-        }
-        console.log(response);
-        res.status(200).send("Notification Deleted Succesfully");
-    })
-}
-
-
 
 // Cancelled Table
+// by client
 export const create_cancelled_trip = (req, res, next) => {
-    const {Driver_ID, Cancel_Start_Lat, Cancel_Start_Long, Cancel_End_Lat, Cancel_End_Long, Cancel_Time} = req.body;
+    const {Driver_ID, Cancel_Start_Lat, Cancel_Start_Long, Cancel_End_Lat, Cancel_End_Long} = req.body;
 
     const sql_query = `insert into Cancellation 
-    (Driver_ID, Cancel_Start_Lat, Cancel_Start_Long, Cancel_End_Lat, Cancel_End_Long, Cancel_Time) 
-    values (${Driver_ID}, ${Cancel_Start_Lat}, ${Cancel_Start_Long}, ${Cancel_End_Lat}, ${Cancel_End_Long}, ${Cancel_Time});`;
+    (Driver_ID, Cancel_Start_Lat, Cancel_Start_Long, Cancel_End_Lat, Cancel_End_Long) 
+    values (${Driver_ID}, ${Cancel_Start_Lat}, ${Cancel_Start_Long}, ${Cancel_End_Lat}, ${Cancel_End_Long});`;
 
     db.query(sql_query, (err, response, feilds) => {
         if(err){
@@ -312,6 +295,7 @@ export const create_cancelled_trip = (req, res, next) => {
 
 }
 
+// by admin
 export const delete_cancelled_trip = (req, res, next) => {
     const Driver_ID = req.params.ID;
 
