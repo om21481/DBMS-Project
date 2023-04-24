@@ -20,7 +20,7 @@ export const register = (req, res, next) => {
                 return next(new Error("Error in Registration"));
             }
 
-            if(response[0] === undefined){
+            if(response.length === 0){
                 if(person === "Driver"){
                     sql_query = `INSERT INTO Driver_Table (D_First_Name, D_Last_Name, D_DOB, D_Email, D_Password) VALUES ("${FirstName}", "${LastName}", "${DOB}", "${Email}", "${n_Password}");`;
                 }

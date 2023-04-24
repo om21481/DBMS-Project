@@ -42,9 +42,14 @@ const SignUp = () => {
                 });
 
                 console.log(res);
-                console.log("Registration Success");
-    
-                navigate("/Login");
+
+                const fun = async() => {
+                    console.log("Registration Success");
+                    navigate("/Login");
+                }
+
+                await fun();
+                
             }
         } catch (error) {
             console.log(error);
@@ -58,9 +63,11 @@ const SignUp = () => {
         <div className="inside1">        
         <div className="center-align"> 
             <input type="radio" name="size" id="size_1" value="small" checked />
-             <label for="size_1" onClick={() => {setCredentials({person:"Client"})}}>Client</label>
+             <label for="size_1" onClick={() => {credentials.person = "Client"
+                setCredentials(credentials)}}>Client</label>
              <input type="radio" name="size" id="size_2" value="small" />
-             <label for="size_2" onClick={() => {setCredentials({person:"Driver"})}}>Driver</label>  
+             <label for="size_2" onClick={() => {credentials.person = "Driver"
+            setCredentials(credentials)}}>Driver</label>  
         </div>
             <div className="w-full flex h-[22%] mb-[4%]">
                 <input 

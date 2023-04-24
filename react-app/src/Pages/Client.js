@@ -9,6 +9,9 @@ import Login from "../Components/login-signup/Login.js";
 import SignUp from "../Components/login-signup/SignUp.js"
 import ConfirmRide from "../Components/Make_Trip/ConfirmRide.jsx";
 import History from "../Components/history/History.jsx";
+import Driver from "./Driver.js";
+import About from "../Components/AboutUs/AboutUs.jsx";
+import Account from "../Components/Account/Account.jsx";
 
 const Client = () => {
     return(
@@ -23,6 +26,9 @@ const Client = () => {
                     <Route path="/SignUp" element={<SignUp/>}/>
                     <Route path="/Confirm_ride" element={<ConfirmRide/>}/>
                     <Route path="/Trips" element={<History/>}/>
+                    <Route path="/Driver" element={<Driver/>}/>
+                    <Route path="/About" element={<About/>}/>
+                    <Route path="/Profile" element={<Account/>}/>
 
                 </Routes>
             </BrowserRouter>

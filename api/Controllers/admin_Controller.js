@@ -32,22 +32,6 @@ export const reject_driver = (req, res, next) => {
     })
 }
 
-export const process_driver = (req, res, next) => {
-    const Driver_ID = req.params.ID;
-
-    const sql_query =  `UPDATE Verification 
-    SET Processing_Application = true WHERE DRIVER_ID = ${Driver_ID};`
-
-    db.query(sql_query, (err, response, feilds) => {
-        if(err){
-            next(createError(404, err));
-        }
-
-        res.status(200).send("Driver Updated Successfully")
-    })
-}
-
-
 // drivers whose application under process
 export const application_process = (req, res, next) => {
     const sql_query =  `SELECT Driver_ID 

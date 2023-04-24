@@ -4,6 +4,9 @@ import { useNavigate } from "react-router-dom";
 import { TripsContext } from "../../requests/useContext";
 import { post_data } from "../../requests/useFetch";
 import Cookies from "js-cookie";
+import Test from "../../Test";
+import TestMain from "../../TestMain";
+import { createError } from "../../requests/createErrors";
 
 const prices = (luxury, suv, sedan, hatchback, distance) => {
     const date = new Date();
@@ -28,16 +31,16 @@ const prices = (luxury, suv, sedan, hatchback, distance) => {
     }
 
 
-    if(suv === 0)  suv_price = "No Rides Available"
+    if(suv === 0)  suv_price = "NaN"
     else if(distance<(2 * suv)) {suv_price = suv_price_per_km * distance}
     else {suv_price = suv_price_per_km * (distance-2*suv)}
 
 
-    if(sedan === 0)  sedan_price = "No Rides Available"
+    if(sedan === 0)  sedan_price = "NaN"
     else if(distance<(2 * sedan)) {sedan_price = sedan_price_per_km * distance}
     else {sedan_price = sedan_price_per_km * (distance-2*sedan)}
 
-    if(hatchback === 0)  hatchback_price = "No Rides Available"
+    if(hatchback === 0)  hatchback_price = "NaN"
     else if(distance<(2 * hatchback)) {hatchback_price = hatchback_price_per_km * distance}
     else hatchback_price = hatchback_price_per_km * distance * 0.75
 
@@ -60,6 +63,7 @@ const Trips = () => {
 
     const [time, setTime] = React.useState('00:00');
     const [time_away, setTime_away] = React.useState('1');
+    const [type, SetType] = React.useState('luxury');
     // const [price, setprice] = React.useState('0.000');
 
     const [time_hatch, setTime_hatch] = React.useState('10:00');
@@ -84,8 +88,6 @@ const Trips = () => {
     const Client_ID = JSON.parse(Cookies.get("auth")).details.Client_ID
     const token = Cookies.get("serv_auth");
 
-    console.log(main_data);
-
     const fun = (img, name, time, time_away, price) => {
         setImage(img);
         setName(name);
@@ -102,35 +104,256 @@ const Trips = () => {
         console.log(main_data);
         const Source = main_data.Source.split(',')
         const Destination = main_data.Destination.split(',')
-        console.log(Source);
-        console.log(Destination);
 
-        const res = await post_data(`/Client/drivers_nearby/${Client_ID}/${token}`, {
+        const res = await post_data(`/Client/get_cars_nearby/${Client_ID}/${token}`, {
             curr_lat: Source[1], 
             curr_long: Source[0],
             distance: 2
         })
-        console.log("res is", res);
 
 
         for(let i=0;i<res.length;i++){
-            console.log(res[i]);
+            if(res[i].Smart_Connect == 0 && res[i].Spread == "NORMAL" && res[i].Comfort_level == "LOW" && res[i].Road_Type == "HIGHWAY"){
+                hatch += 1
+            }
+            else if(res[i].Smart_Connect == 1 && res[i].Spread == "LARGE" && res[i].Comfort_level == "MID" && res[i].Road_Type == "MOUNTAIN"){
+                suv += 1
+            }
+            else if(res[i].Smart_Connect == 1 && res[i].Spread == "NORMAL" && res[i].Comfort_level == "MID" && res[i].Road_Type == "HIGHWAY"){
+                sedan += 1;
+            }
+            else if(res[i].Smart_Connect == 1 && res[i].Spread == "NORMAL" && res[i].Comfort_level == "HIGH" && res[i].Road_Type == "HIGHWAY"){
+                luxury += 1
+            }
         }
 
         setloading(false);
+
+        return {luxury, sedan, suv, hatch};
+    }
+
+    // for making the Trip_ID
+    const create_Trip = async(Driver_ID, Start_lat, Start_long, End_lat, End_long, Amount, Distance) => {
+        const res = await post_data(`/Trips/create/${Client_ID}/${token}`, {
+            Driver_ID: Driver_ID,
+            End_Lat: End_lat,
+            End_Long : End_long, 
+            Start_Lat: Start_lat, 
+            Start_Long: Start_long, 
+            Amount: Amount,  
+            Distance_Trip: Distance});
+    }
+
+    // delete notification in notification table
+    const delete_notification = async() => {
+        
+    }
+
+    // for finding the prices
+    const [price_changed, setPricechanged] = React.useState(false);
+    const setPrices = () => {
+        const {lux_cars, sedan_cars, suv_cars, hatch_cars} = get_data_cars();
+        const distance = parseFloat(main_data.Distance.split('mi')[0])*1.60934;
+        const d = prices(lux_cars, suv_cars, sedan_cars, hatch_cars, distance);
+        if(d[0] === 'NaN'){
+            setPrice_luxury("No Rides Available");
+        }
+        else{
+            setPrice_luxury((d[0]*10).toFixed(3));
+        }
+        if(d[1] === 'NaN'){
+            setPrice_sedan("No Rides Available");
+        }
+        else{
+            setPrice_sedan((d[1]*10).toFixed(3));
+        }
+        if(d[2] === 'NaN'){
+            setPrice_SUV("No Rides Available");
+        }
+        else{
+            setPrice_SUV((d[2]*10).toFixed(3));
+        }
+        if(d[3] === 'NaN'){
+            setPrice_hatch("No Rides Available");
+        }
+        else{
+            setPrice_hatch((d[3]*10).toFixed(3));
+        }
+        setPrice(price_luxury)
+        setPricechanged(true);
+    }
+
+
+    // for finding the drivers
+    const [driver, SetDriver] = React.useState();
+    const [firstDriver, SetfirstDriver] = React.useState(true);
+    const [secondDriver, SetsecondDriver] = React.useState(false);
+    const [thirdDriver, SetthirdDriver] = React.useState(false);
+    const [start_search, setStart_search] = React.useState(false);
+
+    const main_fun = async(data, index, Client_ID, token, drivers, Start_lat, Start_long, End_lat, End_long, distance) => {
+        if(!((index === 1 && secondDriver === true) || (index === 2 && thirdDriver === true))){
+            return;
+        }
+
+        // send the notification to the 2nd driver
+        const {Driver_ID} = data[index]
+        console.log(data[index]);
+        let res = await post_data(`/Client/add_notification/${Client_ID}/${token}`, {
+            Driver_ID: Driver_ID,
+            Start_lat: Start_lat, 
+            Start_long: Start_long, 
+            End_lat: End_lat, 
+            End_long: End_long,
+        })
+
+        console.log(res);
+
+        if(res === "Notification is Created Successfully"){
+            console.log(res);
+            const interval1 = setInterval(async() => {
+                res = await post_data(`/Client/read_notification/${Client_ID}/${token}`, {
+                    Driver_ID: Driver_ID,
+                })
+
+                const {Start_Lat, Start_Long, End_Lat, End_Long, Accept, Reject, Cancel} = res[0];
+            
+                if(Accept === 1){
+                    console.log("Driver Accepted Successfully");
+                    // here we have to make trip entry in trip table with status = pending
+                    // we are setting driver here
+                    SetDriver(Driver_ID);
+
+                    clearInterval(interval1);
+                }
+                else if(Reject === 1){
+                    console.log("Driver rejected Success", index);
+                    if(drivers >= 3){
+                        SetthirdDriver(true);
+                        SetsecondDriver(false);
+                    }
+
+                    clearInterval(interval1);
+                }
+                else if(Cancel === 1){
+                    console.log("Cancel called");
+                    res = await post_data(`/Client/cancel_trip/${Client_ID}/${token}`, {
+                        Driver_ID: Driver_ID,
+                        Cancel_Start_Lat: Start_Lat,
+                        Cancel_Start_Long: Start_Long, 
+                        Cancel_End_Lat: End_Lat, 
+                        Cancel_End_Long: End_Long
+                    })
+
+                    clearInterval(interval1);
+                }
+                else{
+                    console.log("No info gathered till now", index);
+                }
+            }, 2000)
+        }
+    }
+
+    const finding_drivers = async(Start_lat, Start_long, End_lat, End_long, Distance) => {
+        let res = await post_data(`/Client/get_driver_nearby_type/2/${Client_ID}/${token}`, {curr_lat: Start_lat, curr_long: Start_long});
+        let drivers = res.length;
+
+        if(drivers === 0){
+            createError("No Drivers Found Please try after some time");
+            return
+        }
+        
+        if(firstDriver === true){
+            // send the notification to the 1st driver
+            const {Driver_ID} = res[0]
+            console.log(res[0]);
+            res = await post_data(`/Client/add_notification/${Client_ID}/${token}`, {
+                Driver_ID: Driver_ID,
+                Start_lat: Start_lat, 
+                Start_long: Start_long, 
+                End_lat: End_lat, 
+                End_long: End_long,
+            })
+
+            if(res === "Notification is Created Successfully"){
+                console.log(res);
+                const interval1 = setInterval(async() => {
+                    res = await post_data(`/Client/read_notification/${Client_ID}/${token}`, {
+                        Driver_ID: Driver_ID,
+                    })
+
+                    const {Start_Lat, Start_Long, End_Lat, End_Long, Accept, Reject, Cancel} = res[0];
+                
+                    if(Accept === 1){
+                        console.log("Driver Accepted Successfully");
+                        // here we have to make trip entry in trip table with status = pending
+                        // we are setting driver here
+                        SetDriver(Driver_ID);
+
+                        clearInterval(interval1);
+                    }
+                    else if(Reject === 1){
+                        console.log("Driver rejected Success 0");
+                        if(drivers >= 2){
+                            SetsecondDriver(true);
+                            SetfirstDriver(false);
+                        }
+
+                        clearInterval(interval1);
+                    }
+                    else if(Cancel === 1){
+                        console.log("Cancel called");
+                        res = await post_data(`/Client/cancel_trip/${Client_ID}/${token}`, {
+                            Driver_ID: Driver_ID,
+                            Cancel_Start_Lat: Start_Lat,
+                            Cancel_Start_Long: Start_Long, 
+                            Cancel_End_Lat: End_Lat, 
+                            Cancel_End_Long: End_Long
+                        })
+
+                        clearInterval(interval1);
+                    }
+                    else{
+                        console.log("No info gathered till now", 0);
+                    }
+                }, 2000)
+            }
+        }
+
+        if(drivers >= 2){
+            await main_fun(res, 1, Client_ID, token, drivers, Start_lat, Start_long, End_lat, End_long, Distance);
+        }
+        
+        if(drivers >= 3){
+            await main_fun(res, 2, Client_ID, token, drivers, Start_lat, Start_long, End_lat, End_long, Distance);
+        }
+
+        if(driver !== undefined){
+            // formation of Trip_ID
+            await create_Trip(driver, Start_lat, Start_long, End_lat, End_long, price, Distance);
+            
+            const confirm_ride = async() => {navigate("/Confirm_Ride", {state:{
+                main_data : main_data,
+                Amount: price
+            }})
+            window.location.reload()}
+            await confirm_ride();
+        }
     }
 
     useEffect( ()=> {
-        // const [lux_cars, sedan_cars, suv_cars, hatch_cars] = get_data_cars();
-        get_data_cars();
-        // const [luxury, sedan, suv, hatch] = prices();
+        if(price_changed === false){
+            setPrices();
+        }
 
-        // setPrice_luxury(luxury);
-        // setPrice_SUV(suv)
-        // setPrice_hatch(hatch)
-        // setPrice_sedan(sedan)
+        if(start_search === true){
+            const Source = main_data.Source.split(',');
+            const Destiantion = main_data.Destination.split(',');
+            const distance = parseFloat(main_data.Distance.split('mi')[0])*1.60934;
+            finding_drivers(Source[1], Source[0], Destiantion[1], Destiantion[0], price, distance);
+        }
 
-    }, [])
+    }, [firstDriver, secondDriver, thirdDriver, driver, start_search])
 
     return(
         <>
@@ -156,7 +379,10 @@ const Trips = () => {
                 <div className="flex flex-col items-center justify-between h-full w-[69vw] p-2">
                     <p className=" text-white text-xs">Choose a trip or swipe up</p>
                     <div className="h-[90%] w-full p-[2%] flex flex-col items-center justify-around">
-                        <div className="w-[95%] bg-[#221D37] h-[23%] rounded-xl flex text-white" onClick={() => {fun('hatchback-ev_clipdrop-background-removal 1.png', "Taxi Hatch", time_hatch, time_away_hatch, price_hatch)}}>
+                        <div className="w-[95%] bg-[#221D37] h-[23%] rounded-xl flex text-white" onClick={() => {
+                            fun('hatchback-ev_clipdrop-background-removal 1.png', "Taxi Hatch", time_hatch, time_away_hatch, price_hatch)
+                            SetType("Hatchback");
+                            }}>
                             <div className="w-[20%] flex items-center justify-center">
                                 <img src="hatchback-ev_clipdrop-background-removal 1.png" alt="" className="w-[70%]"/>
                             </div>
@@ -168,7 +394,10 @@ const Trips = () => {
                                 <p className="text-3xl">{price_hatch}</p>
                             </div>
                         </div>
-                        <div className="w-[95%] bg-[#221D37] h-[23%] rounded-xl flex text-white" onClick={() => {fun('3d-electric-car-charging-station_clipdrop-background-removal.png', "Taxi SUV", time_SUV, time_away_SUV, price_SUV)}}>
+                        <div className="w-[95%] bg-[#221D37] h-[23%] rounded-xl flex text-white" onClick={() => {
+                            fun('3d-electric-car-charging-station_clipdrop-background-removal.png', "Taxi SUV", time_SUV, time_away_SUV, price_SUV)
+                            SetType("SUV")
+                            }}>
                             <div className=" w-[20%] flex items-center justify-center">
                                 <img src="3d-electric-car-charging-station_clipdrop-background-removal.png" alt="" className="w-[70%]"/>
                             </div>
@@ -180,7 +409,10 @@ const Trips = () => {
                                 <p className="text-3xl">{price_SUV}</p>
                             </div>
                         </div>
-                        <div className="w-[95%] bg-[#221D37] h-[23%] rounded-xl flex text-white" onClick={() => {fun('Primere-class-vehicle_clipdrop-background-removal 1.png', "Taxi Priemer", time_luxury, time_away_luxury, price_luxury)}}>
+                        <div className="w-[95%] bg-[#221D37] h-[23%] rounded-xl flex text-white" onClick={() => {
+                            fun('Primere-class-vehicle_clipdrop-background-removal 1.png', "Taxi Priemer", time_luxury, time_away_luxury, price_luxury)
+                            SetType("luxury");
+                            }}>
                             <div className=" w-[20%] flex items-center justify-center">
                                 <img src="Primere-class-vehicle_clipdrop-background-removal 1.png" alt="" className="w-[80%]"/>
                             </div>
@@ -194,15 +426,17 @@ const Trips = () => {
                         </div>
                         <div className="w-full flex items-center h-[20%] justify-center ">
                             <button className="w-[80%] h-[80%] bg-[#D90368] rounded-2xl text-white text-2xl" onClick={() => {
-                                console.log(main_data);
 
-                                // setloading(true) 
-                                // here we will be finding the driver and storing in TripsContext Driver
+                                setloading(true);
+                                setStart_search(true);
 
-                                // here we will be finding the driver and if decline = true we will find the new driver
-
-                                navigate("/Confirm_Ride", {state:{main_data : main_data}})
-                                window.location.reload()
+                                // if(loading === false){
+                                //     navigate("/Confirm_Ride", {state:{
+                                //         main_data : main_data,
+                                //         Amount: price
+                                //     }})
+                                //     window.location.reload()
+                                // }
                             }}>Confirm Ride</button>
                         </div>
                     </div>

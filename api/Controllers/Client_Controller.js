@@ -185,6 +185,27 @@ export const drivers_nearby_type = (req, res, next) => {
 
 }
 
+export const get_cars_nearby = (req, res, next) => {
+    const {curr_lat, curr_long} = req.body;
+    let {distance} = req.body;
+    distance = (distance*0.015060)*(distance*0.015060);
+
+    const sql_query = `select Driver_ID, Smart_Connect, Comfort_level, Road_Type, Spread from 
+    ((select Driver_ID from driver_table where (${curr_lat} - D_Current_Location_lat)*(${curr_lat} - D_Current_Location_lat)
+     + (${curr_long} - D_Current_Location_long) * (${curr_long} - D_Current_Location_long) <= ${distance} and is_busy = false 
+    ) intersect select Driver_ID from verification where Accepted_Drivers = true) As T 
+    natural join Driver_Table natural join Vehicle_Table;`;
+
+    db.query(sql_query, (err, response, feilds) => {
+        if(err){
+            res.status(404).send("Page not found");
+            return;
+        }
+
+        res.status(200).json(response);
+    })
+}
+
 // we will be given a array here
 export const create_rejected_drivers = (req, res, next) => {
     const {rejected_drivers, Trip_ID} = req.body;
@@ -312,4 +333,19 @@ export const delete_cancelled_trip = (req, res, next) => {
     })
 }
 
-    
+
+
+export const pay_driver = (req, res, next) => {
+    const Trip_ID = req.params.Trip_ID;
+
+    const sql_query = `update trips_table set status_trips = "Successful" where Trip_ID = ${Trip_ID};`;
+
+    db.query(sql_query, (err, response, feilds) => {
+        if(err){
+            next(createError(404, "Page not found"));
+            return;
+        }
+        console.log(response);
+        res.status(200).send("Trip Completed Succesfully");
+    })
+}

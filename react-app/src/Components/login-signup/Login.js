@@ -21,7 +21,6 @@ const Login = () => {
     };
 
     const submit = async() => {
-
         try {
             if(credentials.email != undefined && credentials.password != undefined){
                 const res = await axios.post("http://localhost:8000/auth/login", {
@@ -40,8 +39,15 @@ const Login = () => {
                 Cookies.set("serv_auth", token);
                 setlogin(true);
 
-                navigate("/");
-                window.location.reload()
+                if(credentials.person === "Driver"){
+                    navigate("/Driver");
+                    window.location.reload()
+                }
+                else{
+                    navigate("/");
+                    window.location.reload()
+                }
+
             }
         } catch (error) {
             console.log("Wrong password or username!!!");           // here will be different code for wromg password and username
@@ -53,7 +59,15 @@ const Login = () => {
         <>
             <Navbar/>
             <div className="inside">
-            <div className="inside1 mt-[9%]">        
+            <div className="inside1 mt-[9%]">  
+                <div className="center-align"> 
+                    <input type="radio" name="size" id="size_1" value="small" checked />
+                    <label for="size_1" onClick={() => {credentials.person = "Client"
+                setCredentials(credentials)}}>Client</label>
+                    <input type="radio" name="size" id="size_2" value="small" />
+                    <label for="size_2" onClick={() => {credentials.person = "Driver"
+                setCredentials(credentials)}}>Driver</label>  
+                </div>      
                 <input
                     type="text"
                     placeholder="Email"

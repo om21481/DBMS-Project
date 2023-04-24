@@ -1,6 +1,6 @@
 import Express from "express";
 const router = Express.Router();
-import { add_phone_Client, create_Client, create_Notification, create_cancelled_trip, delete_Client, drivers_nearby, drivers_nearby_type, get_Client, get_Client_all, update_Client, update_Client_location } from "../Controllers/Client_Controller.js"; 
+import { add_phone_Client, create_Client, create_Notification, create_cancelled_trip, delete_Client, drivers_nearby, drivers_nearby_type, get_Client, get_Client_all, get_cars_nearby, pay_driver, update_Client, update_Client_location } from "../Controllers/Client_Controller.js"; 
 import { verifyAdmin, verifyUser } from "../utils/verifyToken.js";
 import {update_Cancel_Email } from "../Controllers/Driver_Controller.js";
 import { read_Notification } from "../Controllers/Client_Controller.js";
@@ -11,6 +11,7 @@ router.post("/update_phones/:ID/:access_token", verifyUser, add_phone_Client);
 router.post("/updateLocation/:ID/:access_token", verifyUser, update_Client_location);
 router.get("/get/:ID/:access_token", verifyUser, get_Client);
 router.post("/drivers_nearby/:ID/:access_token", verifyUser, drivers_nearby);
+router.post("/get_cars_nearby/:ID/:access_token", verifyUser, get_cars_nearby);
 
 // feedback
 router.post("/feedback/:ID", verifyUser, update_trips)
@@ -25,6 +26,9 @@ router.post("/read_notification/:ID/:access_token", verifyUser, read_Notificatio
 
 // for conformation of ride
 router.post("/get_driver_nearby_type/:distance/:ID/:access_token", verifyUser, drivers_nearby_type);
+
+// paying the driver
+router.get("/pay_Driver/:ID/:access_token/:Trip_ID", verifyUser, pay_driver);
 
 // admin
 router.post("/create", verifyAdmin, create_Client);

@@ -6,18 +6,19 @@ import { createError } from "./requests/createErrors";
 import { ToastContainer } from "react-toastify";
 import { TripsContext } from "./requests/useContext";
 
-const Test = () => {
+const Test = ({driver, SetDriver}) => {
     const [firstDriver, SetfirstDriver] = React.useState(true);
     const [secondDriver, SetsecondDriver] = React.useState(false);
     const [thirdDriver, SetthirdDriver] = React.useState(false);
 
-    const [driver, SetDriver] = React.useState();
+    console.log("Inside this");
+
+    // const [driver, SetDriver] = React.useState();
 
     const main_fun = async(data, index, Client_ID, token, drivers) => {
         if(!((index === 1 && secondDriver === true) || (index === 2 && thirdDriver === true))){
             return;
         }
-
         // send the notification to the 2nd driver
         const {Driver_ID} = data[index]
         console.log(data[index]);
@@ -69,8 +70,6 @@ const Test = () => {
                         Cancel_End_Lat: End_Lat, 
                         Cancel_End_Long: End_Long
                     })
-                    
-                    // here we need to make a cancelled trip or not ?????????????????????????????????????????????
 
                     clearInterval(interval1);
                 }
@@ -178,7 +177,7 @@ const Test = () => {
         fun()
     }, [firstDriver, secondDriver, thirdDriver, driver])
 
-    return(<></>)
+    return(driver)
 }
 
 export default Test;

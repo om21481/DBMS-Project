@@ -5,6 +5,7 @@ import Cookies from "js-cookie";
 
 const Navbar = () => {
     const {login, setlogin, details} = React.useContext(CustomerContext);
+    console.log(details);
     const navigate = useNavigate();
     const logout = () => {
         Cookies.remove("auth");
@@ -18,6 +19,17 @@ const Navbar = () => {
             setlogin(true)
         }
     }, [])
+
+    const verify = () => {
+        console.log(login);
+        if(login === true){
+            navigate("/Trips")
+            window.location.reload()
+        }
+        else{
+            navigate("/login")
+        }
+    }
 
     return(
         <>
@@ -36,18 +48,23 @@ const Navbar = () => {
                     <img src="icons8-home-64 1.png" alt="" className="w-[20%] mx-[8px]"/>
                     <p className="text-white">HOME</p>
                 </div>
-                <div className="w-[19%] flex items-center justify-center  cursor-pointer">
+                <div className="w-[19%] flex items-center justify-center  cursor-pointer" onClick={() => {
+                    navigate("/About")
+                    window.location.reload()
+                }}>
                     <img src="icons8-services-96 1.png" alt="" className="w-[20%] mx-[8px]"/>
                     <p className="text-white">ABOUT US</p>
                 </div>
                 <div className="w-[19%] flex items-center justify-center cursor-pointer" onClick={() => {
-                    navigate("/Trips")
-                    window.location.reload()
+                    verify()
                     }}>
                     <img src="icons8-trekking-64 1.png" alt="" className="w-[20%] mx-[8px]"/>
                     <p className="text-white">TRIPS</p>
                 </div>
-                <div className="w-[19%] flex items-center justify-center cursor-pointer">
+                <div className="w-[19%] flex items-center justify-center cursor-pointer" onClick={() => {
+                    navigate("/Profile", {state: details})
+                    window.location.reload()
+                }}>
                     <img src="icons8-account-64 1.png" alt="" className="w-[20%] mx-[8px]"/>
                     <p className="text-white">ACCOUNT</p>
                 </div>

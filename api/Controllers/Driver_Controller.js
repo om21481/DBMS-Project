@@ -205,28 +205,26 @@ export const get_all_driver_locations = (req, res, next) => {
     })
 }
 
-
-
 // update Notifications Table
 export const update_Notification_Table = (req, res, next) => {
     const Driver_ID = req.params.ID;
     const {attribute} = req.body;
 
-    const sql_query = ``;
+    let sql_query = ``;
 
     if(attribute === "Accepted"){
         sql_query = `update Notification_Table 
-        set Accepted = true 
+        set Accept = true 
         where Driver_ID = ${Driver_ID};`;
     }
     else if(attribute === "Rejected"){
         sql_query = `update Notifications_Table 
-        set Rejected = true 
+        set Reject = true 
         where Driver_ID = ${Driver_ID};`;
     }
     else if(attribute === "Cancelled"){
         sql_query = `update Notifications_Table 
-        set Cancelled = true 
+        set Cancel = true 
         where Driver_ID = ${Driver_ID};`;
     }
 
@@ -242,7 +240,6 @@ export const update_Notification_Table = (req, res, next) => {
     }
 
 }
-
 
 export const update_Cancel_Email = (req, res, next) => {
     const Driver_ID = req.params.ID;

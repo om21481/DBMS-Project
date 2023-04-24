@@ -107,8 +107,6 @@ const update_time_distance = async(Destination, Driver_ID) => {
     const time = res.data.routes[0].duration/60
     const distance = res.data.routes[0].distance
 
-    console.log(Source, Destination);
-
     return [time, distance];
 }
 
@@ -125,8 +123,6 @@ const ConfirmRide = () => {
     
     React.useEffect(() => {
         const fun = async() => {
-            // const Source = "77.27329,28.54863";
-            // const Destination = "77.26269,28.54826";
             const Source = main_data.Source;
             const Destination = main_data.Destination;
             setTime(main_data.Time)
@@ -137,9 +133,6 @@ const ConfirmRide = () => {
             const routes_data = res.data.routes[0].geometry.coordinates;
 
             main_function(routes_data, Source.split(','), Destination.split(','), Driver_ID)
-
-            // here we will run time left and updating the markers and time and distance
-            // console.log(time, distance);
             
             setInterval(async() => {
                 const [t, d] = await update_time_distance(Destination, Driver_ID);
